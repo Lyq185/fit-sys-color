@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pen Sleeve Fit System V4.0</title>
+
+<style>
+/* ========== 保留所有原始样式不变 ========== */
+body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+    background:#000000;
+    color:#e5e7eb;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+}
+
+.app{
+    width:100%;
+    max-width:480px;
+    padding:16px;
+    box-sizing: border-box;
+}
+
+h1{
+    text-align:center;
+    font-size:20px;
+    font-weight:600;
+    color:#f0f0f0;
+    text-shadow:0 0 2px rgba(255,255,255,0.2);
+}
+
+.card{
+    background:#0c0c0c;
+    border-radius:18px;
+    border:1px solid #3a4a6a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+    padding:10px 14px;
+    margin-bottom:10px;
+    transition: border-color 0.1s ease;
+}
+
+.card:hover{
+    border-color:#5a7a9a;
+}
+
+input[type="range"]{
+    width:100%;
+    margin-top:10px;
+    height:10px;
+    -webkit-appearance: none;
+    background:#2a2e3a;
+    border-radius:10px;
+    outline: none;
+}
+input[type="range"]:focus{
+    outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #f97316;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 6px #f97316;
+    cursor: pointer;
+}
+
+.row{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+}
+
+/* 用于步进器靠右对齐的容器 */
+.stepper-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.stepper-row .stepper-label {
+    font-size: 18px;
+}
+.stepper-row .capsule-stepper {
+    margin-left: auto;
+}
+
+.big{
+    font-size:24px;
+    font-weight:400;
+}
+
+.tag{
+    font-size:18px;
+    font-weight:600;
+    padding:6px 12px;
+    border-radius: 40px;
+    background:#1a1a1a;
+    text-align:center;
+    border: 1px solid #3a3f4e;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+}
+
+.tag.xs{background:#2b6e3c; border-color:#6fbf4c;}
+.tag.s{background:#1e5a8a; border-color:#3b82f6;}
+.tag.m{background:#6b21a5; border-color:#c084fc;}
+.tag.l{background:#b45309; border-color:#f97316;}
+.tag.xl{background:#9b2c2c; border-color:#ef4444;}
+
+.tag.d1{background:#0e6b8f; border-color:#22d3ee;}
+.tag.d2{background:#0f766e; border-color:#2dd4bf;}
+.tag.d3{background:#a16207; border-color:#facc15;}
+.tag.d4{background:#c2410c; border-color:#fb923c;}
+.tag.d5{background:#b91c1c; border-color:#f87171;}
+.tag.d6{background:#a21caf; border-color:#e879f9;}
+
+.tag.mode-hint {
+    background: #f97316;
+    color: #0b0f17;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border: 1px solid #ffb347;
+    box-shadow: 0 0 6px rgba(249,115,22,0.4);
+    border-radius: 40px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+}
+
+/* ========== 胶囊步进器样式 - 高度36px ========== */
+.capsule-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #0a0a0c;
+    padding: 3px 6px;
+    border-radius: 40px;
+    border: 1px solid #2a2e3f;
+    height: 36px;
+    font-size: 0;
+}
+
+.capsule-stepper button {
+    background: #1c1c22;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    font-size: 20px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: 0.1s linear;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.capsule-stepper button:active {
+    transform: scale(0.92);
+    background: #2c2c34;
+}
+
+.capsule-stepper .value {
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-align: center;
+    color: #facc15;
+    min-width: auto;
+    padding: 0 2px;
+    white-space: nowrap;
+}
+
+.capsule-stepper button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+}
+/* ========== 修改结束 ========== */
+
+/* 修复 #limitVal 和 #q 的样式，与 .value 保持一致 */
+#limitVal,
+#q {
+    font-size: 1.25rem;
+    font-weight: 500;
+    text-align: center;
+    color: #facc15;
+    min-width: auto;
+    padding: 0 2px;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+/* ========== Clipped/Clipless 按钮 - 高度36px ========== */
+.switch{
+    display:flex;
+    gap:10px;
+}
+
+.switch button{
+    flex:1;
+    padding: 9px 10px;
+    font-size: 16px;
+    border-radius: 40px;
+    border: 1px solid #4b5563;
+    background:#0a0a0a;
+    color:#fff;
+    font-weight:400;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.switch button:hover:not(.active) {
+    background: #2a2a2a;
+    border-color: #6b7280;
+}
+
+.switch button.active:hover {
+    background: #1d4ed8;
+    border-color: #93c5fd;
+}
+
+.switch .active{background:#2563eb; border-color:#60a5fa; box-shadow:0 0 6px #3b82f6;}
+/* ========== 修改结束 ========== */
+
+/* 颜色模块 - 使用flex布局，标签在左侧，色块靠右 */
+.color-module-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+/* Color 标签样式 - 去掉胶囊背景 */
+.color-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #e5e7eb;
+    background: transparent;
+    padding: 0;
+    border: none;
+}
+.color-label-icon {
+    font-size: 18px;
+}
+.color-label-text {
+    font-size: 18px;
+    font-weight: 500;
+}
+/* 慢闪动画 - 与 👉 Set Qty 一致 */
+@keyframes slowBlink {
+  0% { opacity: 1; }
+  25% { opacity: 0.25; }
+  50% { opacity: 1; }
+  75% { opacity: 0.25; }
+  100% { opacity: 1; }
+}
+.color-label.blink {
+    animation: slowBlink 2.4s ease-in-out 1;
+}
+/* 颜色按钮闪烁样式 */
+.color-chip.blink {
+    animation: slowBlink 2.4s ease-in-out 1;
+}
+.color-chips-group {
+    display: flex;
+    gap: 10px;
+}
+/* 颜色按钮样式：支持背景色 + 图片覆盖 */
+.color-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 36px;
+    transition: 0.08s linear;
+    cursor: pointer;
+    overflow: visible;
+    flex-shrink: 0;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+/* 图片覆盖背景色 */
+.color-chip img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+}
+/* 如果没有图片或图片加载失败，显示背景色 */
+.color-chip.no-image {
+    background-size: 60%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+/* 提示框样式 - 修复确保显示 */
+.color-chip .custom-tooltip {
+    position: absolute;
+    bottom: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(12px);
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.2);
+    line-height: 1.3;
+    font-family: inherit;
+    /* 确保初始不可见 */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+/* 鼠标悬停时显示提示 */
+.color-chip:hover .custom-tooltip {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.color-chip.active {
+    outline: 3px solid #facc15;
+    outline-offset: 2px;
+    transform: scale(0.96);
+}
+.color-chip.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+@media (max-width: 480px) {
+    .color-chip .custom-tooltip {
+        padding: 6px 14px;
+        font-size: 14px;
+        bottom: 42px;
+    }
+}
+
+.color-name-in-history {
+    font-weight: 400;
+    margin-left: 0px;
+    white-space: nowrap;
+}
+
+.item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0e0e12;
+    border: 1px solid #2d3345;
+    border-radius: 14px;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 18px;
+    line-height: 1.4;
+    gap: 10px;
+    transition: border 0.1s;
+}
+.item:hover{
+    border-color: #f97316;
+}
+
+.item-code {
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px;
+    flex: 1;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.highlight-number {
+    color: #f97316;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.del{
+    background: #2a2a2a;
+    border: 1px solid #4b5563;
+    color: #e5e7eb;
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.del:hover{
+    background: #f97316;
+    border-color: #ffb347;
+    color: #0b0f17;
+}
+
+.bottom{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    display:flex;
+    justify-content:center;
+    background:linear-gradient(to top, #000000, transparent);
+    padding-bottom:16px;
+    padding-top:12px;
+    box-sizing:border-box;
+}
+
+.bottom-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 16px;
+    box-sizing: border-box;
+}
+
+.bottom-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.bottom button {
+    flex: 1;
+    padding: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: transform 0.05s linear;
+}
+
+.bottom button:active {
+    transform: scale(0.97);
+}
+
+.bottom button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+#genBtn {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 2px 8px #1e3a8a;
+}
+#copyBtn {
+    background: #f97316;
+    color: #0b0f17;
+    font-weight: 600;
+    border: 1px solid #ffb366;
+}
+#clearBtn {
+    background: #dc2626;
+    color: white;
+    box-shadow: 0 2px 6px #7f1a1a;
+}
+
+.toast{
+    position:fixed;
+    bottom:90px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#1f2937;
+    backdrop-filter: blur(8px);
+    color:#facc15;
+    padding:10px 18px;
+    border-radius:40px;
+    font-weight:600;
+    border-left: 3px solid #f97316;
+    opacity:0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Save 确认面板 */
+#confirmPanel {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter: blur(4px);
+  z-index:100;
+  justify-content:center;
+  align-items:center;
+}
+
+#confirmBox {
+  background:#121212;
+  border-radius:20px;
+  padding:24px 20px;
+  width:90%;
+  max-width:400px;
+  text-align:center;
+  border: 1px solid #2a2e3a;
+  box-shadow:0 20px 35px rgba(0,0,0,0.6);
+}
+
+#confirmText {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    word-break: break-word;
+    background: #1a1a1a;
+    border: 1px solid #f97316;
+    border-radius: 14px;
+    padding: 14px 16px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#confirmHint {
+  font-size: 20px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+#confirmHint.blink {
+  animation: slowBlink 2.4s ease-in-out 1;
+}
+
+.confirm-btns {
+  display:flex;
+  gap:12px;
+}
+
+.confirm-btns button {
+  flex:1;
+  padding:12px;
+  font-size:18px;
+  font-weight:600;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+}
+
+#confirmCancel {
+  background:#374151;
+  color:#fff;
+}
+
+#confirmSave {
+  background:#22c55e;
+  color:#000;
+}
+
+/* Clear 确认面板 */
+#clearConfirmPanel {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter: blur(4px);
+  z-index:100;
+  justify-content:center;
+  align-items:center;
+}
+
+#clearConfirmBox {
+  background:#121212;
+  border-radius:20px;
+  padding:24px 20px;
+  width:90%;
+  max-width:400px;
+  text-align:center;
+  border: 1px solid #2a2e3a;
+  box-shadow:0 20px 35px rgba(0,0,0,0.6);
+}
+
+/* Clear 确认框文字 - 紧凑型胶囊 */
+#clearConfirmText {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    word-break: keep-all;
+    background: #1a1a1a;
+    border: 1px solid #f97316;
+    border-radius: 40px;
+    padding: 10px 20px;
+    width: auto;
+    display: inline-block;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.clear-confirm-btns {
+  display:flex;
+  gap:12px;
+}
+
+.clear-confirm-btns button {
+  flex:1;
+  padding:12px;
+  font-size:18px;
+  font-weight:600;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+}
+
+#clearConfirmCancel {
+  background:#374151;
+  color:#fff;
+}
+
+#clearConfirmOK {
+  background:#22c55e;
+  color:#000;
+}
+
+/* 删除确认面板 */
+#deleteConfirmPanel {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.92);
+  backdrop-filter: blur(4px);
+  z-index:100;
+  justify-content:center;
+  align-items:center;
+}
+
+#deleteConfirmBox {
+  background:#121212;
+  border-radius:20px;
+  padding:24px 20px;
+  width:90%;
+  max-width:400px;
+  text-align:center;
+  border: 1px solid #2a2e3a;
+  box-shadow:0 20px 35px rgba(0,0,0,0.6);
+}
+
+#deleteConfirmText {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    word-break: keep-all;
+    background: #1a1a1a;
+    border: 1px solid #f97316;
+    border-radius: 40px;
+    padding: 10px 20px;
+    width: auto;
+    display: inline-block;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.delete-confirm-btns {
+  display:flex;
+  gap:12px;
+}
+
+.delete-confirm-btns button {
+  flex:1;
+  padding:12px;
+  font-size:18px;
+  font-weight:600;
+  border-radius: 40px;
+  border: none;
+  cursor: pointer;
+}
+
+#deleteConfirmCancel {
+  background:#374151;
+  color:#fff;
+}
+
+#deleteConfirmOK {
+  background:#dc2626;
+  color:#fff;
+}
+
+#historyPanel {
+    width:100%;
+    max-width:480px;
+    margin:0 auto;
+    box-sizing:border-box;
+    padding-bottom:120px;
+}
+
+#previewCount {
+    color: #FCD34D;
+    font-weight: 400;
+    letter-spacing: 3px;
+}
+
+/* 预览文本：去掉胶囊背景样式 */
+#preview {
+    text-align: center;
+    font-weight: 600;
+    background: transparent;
+    padding: 12px 0;
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 12px 0 0 0;
+}
+
+#previewCard .row div[style*="font-size:18px"] {
+    font-weight: 400 !important;
+}
+
+#previewCard .row label {
+    font-weight: 400 !important;
+}
+
+.hint{
+    font-size:16px;
+    font-weight:600;
+    color:#FCD34D;
+    white-space:nowrap;
+    transform: translateX(-6px);
+}
+
+#hint.blink, #c1.blink, #c2.blink, #copyBtn.blink, .color-label.blink, .color-chip.blink {
+  animation: slowBlink 2.4s ease-in-out 1;
+}
+
+#Lc{
+    font-size:20px;
+}
+
+#Dc{
+    font-size:20px;
+}
+
+#copyBtn {
+    border: 2px solid #f97316;
+    background: #f97316;
+    color: #0b0f17;
+    font-weight: 600;
+}
+
+#supportedQtyTitle {
+    font-weight: 600 !important;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+<h1>✒️ Pen Sleeve Fit V4.0</h1>
+
+<!-- 步进器 1：支持数量（靠右对齐） -->
+<div class="card">
+  <div class="stepper-row">
+    <div class="stepper-label">
+      <span id="supportedQtyTitle" style="font-size:18px; display:none;">📦 Supported Qty</span>
+      <span class="hint" id="hint" style="display:none; font-size:18px;">👉 Set Qty</span>
+    </div>
+    <div class="capsule-stepper" style="margin:0;">
+      <button onclick="setLimit(-1)">–</button><span class="value" id="limitVal">0</span><button onclick="setLimit(1)">+</button>
+    </div>
+  </div>
+</div>
+
+<!-- 步进器 2：直径调节 + 开关（开关靠左，步进器靠右） -->
+<div class="card">
+  <input type="range" id="D" min="7" max="18.5" step="0.1" value="7">
+  <div style="margin-top:12px;">
+    <div class="stepper-row">
+      <div class="switch" style="margin:0;gap:6px;">
+        <button id="c1" onclick="mode('clipped')">Clipped</button>
+        <button id="c2" onclick="mode('clipless')">Clipless</button>
+      </div>
+      <div class="capsule-stepper" style="margin:0;">
+        <button id="diaMinusBtn" onclick="diaStep(-0.1)">–</button><span class="value" id="Dv">7.0</span><button id="diaPlusBtn" onclick="diaStep(0.1)">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="tag" id="Dc" style="margin-top:12px;text-align:center;"></div>
+</div>
+
+<!-- 步进器 3：长度调节（靠右对齐） -->
+<div class="card">
+  <input type="range" min="85" max="165" step="1" value="85" id="L">
+  <div class="stepper-row" style="margin-top:12px;">
+    <div class="stepper-label">📏 Length</div>
+    <div class="capsule-stepper" style="margin:0;">
+      <button onclick="lenStep(-0.1)">–</button><span class="value" id="Lv">85.0</span><button onclick="lenStep(0.1)">+</button>
+    </div>
+  </div>
+  <div class="tag" id="Lc" style="margin-top:12px;text-align:center;"></div>
+</div>
+
+<!-- 颜色模块：标签在左侧（🎨 Color），颜色按钮靠右对齐 -->
+<div class="card" id="colorCard">
+  <div class="color-module-row">
+    <!-- 左侧标签：🎨 Color（无胶囊背景） -->
+    <div class="color-label" id="colorLabel">
+      <span class="color-label-icon">🎨</span>
+      <span class="color-label-text">Color</span>
+    </div>
+    <!-- 右侧颜色按钮组 -->
+    <div class="color-chips-group" id="colorChipsGroup">
+      <!-- Bottiglia - 瓶绿色 -->
+      <div class="color-chip" data-color="Bottiglia" style="background-color: #2e8b57;">
+        <img src="images/Bottiglia.png" alt="Bottiglia" onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('no-image');">
+        <span class="custom-tooltip" style="color: #2e8b57;">Bottle Green</span>
+      </div>
+      <!-- Napoli - 那不勒斯黄 -->
+      <div class="color-chip" data-color="Napoli" style="background-color: #e5c07b;">
+        <img src="images/Napoli.png" alt="Napoli" onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('no-image');">
+        <span class="custom-tooltip" style="color: #e5c07b;">Naples Yellow</span>
+      </div>
+      <!-- Nero - 黑色 -->
+      <div class="color-chip" data-color="Nero" style="background-color: #4a4a4a;">
+        <img src="images/Nero.png" alt="Nero" onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('no-image');">
+        <span class="custom-tooltip" style="color: #4a4a4a;">Nero</span>
+      </div>
+      <!-- Papavero - 罂粟红 -->
+      <div class="color-chip" data-color="Papavero" style="background-color: #e34234;">
+        <img src="images/Papavero.png" alt="Papavero" onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('no-image');">
+        <span class="custom-tooltip" style="color: #e34234;">Poppy Red</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 步进器 4：Preview 面板 -->
+<div class="card" id="previewCard">
+  <div class="stepper-row">
+    <div class="stepper-label">
+      <label style="font-size:20px;">✨ Preview</label>
+      <div class="big" id="previewCount" style="font-size:22px; display:inline-block; margin-left:6px;"></div>
+    </div>
+    <div class="capsule-stepper" style="margin:0;">
+      <button id="qtyMinusBtn" class="qty-control-btn" onclick="handleQtyChange(-1)">–</button><span class="value" id="q">0</span><button id="qtyPlusBtn" class="qty-control-btn" onclick="handleQtyChange(1)">+</button>
+    </div>
+  </div>
+  <div id="preview" style="font-size:26px; word-break:break-word;"></div>
+</div>
+
+<div id="historyPanel">
+  <div id="history"></div>
+</div>
+
+<div class="bottom">
+  <div class="bottom-container">
+    <div class="bottom-buttons">
+      <button id="genBtn" onclick="showConfirm()">Save Fit</button>
+      <button id="copyBtn" onclick="copy()" disabled>Copy All</button>
+      <button id="clearBtn" onclick="showClearConfirm()">Clear</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Save 确认面板 -->
+<div id="confirmPanel">
+  <div id="confirmBox">
+    <div id="confirmText"></div>
+    <div id="confirmHint">Please Confirm</div>
+    <div class="confirm-btns">
+      <button id="confirmCancel" onclick="hideConfirm()">Cancel</button>
+      <button id="confirmSave" onclick="doSave()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Clear 确认面板 -->
+<div id="clearConfirmPanel">
+  <div id="clearConfirmBox">
+    <div id="clearConfirmText">Clear all data?</div>
+    <div class="clear-confirm-btns">
+      <button id="clearConfirmCancel" onclick="hideClearConfirm()">Cancel</button>
+      <button id="clearConfirmOK" onclick="doClear()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- 删除确认面板 -->
+<div id="deleteConfirmPanel">
+  <div id="deleteConfirmBox">
+    <div id="deleteConfirmText">Delete config?</div>
+    <div class="delete-confirm-btns">
+      <button id="deleteConfirmCancel" onclick="hideDeleteConfirm()">Cancel</button>
+      <button id="deleteConfirmOK" onclick="doDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const _0x4bbb2a=_0x52bb;(function(_0x4ee5d0,_0x52e64c){const _0x3aac9d=_0x52bb,_0xdf55a4=_0x4ee5d0();while(!![]){try{const _0x302c2f=parseInt(_0x3aac9d(0xa4))/0x1*(parseInt(_0x3aac9d(0xad))/0x2)+parseInt(_0x3aac9d(0x124))/0x3*(parseInt(_0x3aac9d(0xa5))/0x4)+-parseInt(_0x3aac9d(0x109))/0x5+parseInt(_0x3aac9d(0x108))/0x6*(parseInt(_0x3aac9d(0xd5))/0x7)+-parseInt(_0x3aac9d(0xcb))/0x8+-parseInt(_0x3aac9d(0x96))/0x9*(parseInt(_0x3aac9d(0xcc))/0xa)+parseInt(_0x3aac9d(0x8c))/0xb*(parseInt(_0x3aac9d(0x11e))/0xc);if(_0x302c2f===_0x52e64c)break;else _0xdf55a4['push'](_0xdf55a4['shift']());}catch(_0x1ff1c9){_0xdf55a4['push'](_0xdf55a4['shift']());}}}(_0x11fa,0xe4e6c));const _0x4c46c0=(function(){let _0x442e04=!![];return function(_0xaa686,_0x5cd497){const _0x4bc879=_0x442e04?function(){const _0x41d57a=_0x52bb;if(_0x5cd497){const _0x1460dc=_0x5cd497[_0x41d57a(0xd1)](_0xaa686,arguments);return _0x5cd497=null,_0x1460dc;}}:function(){};return _0x442e04=![],_0x4bc879;};}()),_0x1709b7=_0x4c46c0(this,function(){const _0x5c9ef5=_0x52bb;return _0x1709b7[_0x5c9ef5(0x134)]()[_0x5c9ef5(0xb0)](_0x5c9ef5(0x94))[_0x5c9ef5(0x134)]()[_0x5c9ef5(0x132)](_0x1709b7)['search'](_0x5c9ef5(0x94));});function _0x52bb(_0x1d935e,_0x483715){_0x1d935e=_0x1d935e-0x87;const _0x4e7f16=_0x11fa();let _0x271367=_0x4e7f16[_0x1d935e];return _0x271367;}_0x1709b7();const _0x127426=(function(){let _0x5895a4=!![];return function(_0xfcf1c5,_0x9e403e){const _0x204ee2=_0x5895a4?function(){const _0x5acfd7=_0x52bb;if(_0x9e403e){const _0x17908a=_0x9e403e[_0x5acfd7(0xd1)](_0xfcf1c5,arguments);return _0x9e403e=null,_0x17908a;}}:function(){};return _0x5895a4=![],_0x204ee2;};}()),_0x271367=_0x127426(this,function(){const _0x53c0f3=_0x52bb,_0xa12cfb=function(){const _0x4c1a5b=_0x52bb;let _0x12e614;try{_0x12e614=Function(_0x4c1a5b(0x93)+_0x4c1a5b(0xca)+');')();}catch(_0x308e77){_0x12e614=window;}return _0x12e614;},_0x15bfee=_0xa12cfb(),_0x830dfe=_0x15bfee['console']=_0x15bfee[_0x53c0f3(0xf8)]||{},_0x31c0a9=['log',_0x53c0f3(0x123),_0x53c0f3(0xd2),_0x53c0f3(0x9e),_0x53c0f3(0x101),_0x53c0f3(0xe4),_0x53c0f3(0x11d)];for(let _0x3a672f=0x0;_0x3a672f<_0x31c0a9[_0x53c0f3(0xe7)];_0x3a672f++){const _0x3cb5ec=_0x127426[_0x53c0f3(0x132)][_0x53c0f3(0xed)][_0x53c0f3(0x105)](_0x127426),_0x312851=_0x31c0a9[_0x3a672f],_0x2eab8a=_0x830dfe[_0x312851]||_0x3cb5ec;_0x3cb5ec[_0x53c0f3(0x103)]=_0x127426[_0x53c0f3(0x105)](_0x127426),_0x3cb5ec[_0x53c0f3(0x134)]=_0x2eab8a[_0x53c0f3(0x134)][_0x53c0f3(0x105)](_0x2eab8a),_0x830dfe[_0x312851]=_0x3cb5ec;}});_0x271367();function clean(_0x213175){const _0x572972=_0x52bb;return Number['isInteger'](_0x213175)?_0x213175[_0x572972(0x134)]():_0x213175[_0x572972(0x112)](0x1);}function showColorPickHint(){const _0x5364eb=_0x52bb,_0x204c4a=document['getElementById']('colorLabel'),_0x27053a=document[_0x5364eb(0xb1)](_0x5364eb(0x99));_0x204c4a&&(_0x204c4a['style'][_0x5364eb(0xe9)]='none',_0x204c4a['offsetHeight'],_0x204c4a['style']['animation']='',_0x204c4a[_0x5364eb(0xc0)][_0x5364eb(0xd0)](_0x5364eb(0xa8)),setTimeout(()=>{const _0x1587c6=_0x5364eb;_0x204c4a[_0x1587c6(0xc0)][_0x1587c6(0x13a)]('blink');},0x960)),_0x27053a[_0x5364eb(0x135)](_0x1b2f26=>{const _0x4879f9=_0x5364eb;_0x1b2f26[_0x4879f9(0x12f)]['animation']='none',_0x1b2f26[_0x4879f9(0xab)],_0x1b2f26[_0x4879f9(0x12f)]['animation']='',_0x1b2f26['classList'][_0x4879f9(0xd0)]('blink'),setTimeout(()=>{const _0x16155d=_0x4879f9;_0x1b2f26[_0x16155d(0xc0)][_0x16155d(0x13a)](_0x16155d(0xa8));},0x960);});}function stopColorBlink(){const _0x19f07c=_0x52bb,_0x3fbaae=document[_0x19f07c(0xf9)](_0x19f07c(0x11a)),_0x345850=document['querySelectorAll'](_0x19f07c(0x99));_0x3fbaae&&(_0x3fbaae['classList'][_0x19f07c(0x13a)](_0x19f07c(0xa8)),_0x3fbaae[_0x19f07c(0x12f)][_0x19f07c(0xe9)]=''),_0x345850['forEach'](_0x21c61b=>{const _0xe5cee0=_0x19f07c;_0x21c61b[_0xe5cee0(0xc0)]['remove'](_0xe5cee0(0xa8)),_0x21c61b[_0xe5cee0(0x12f)][_0xe5cee0(0xe9)]='';});}let pendingDeleteKey=null,pendingDeleteQty=null;const COLOR_LIST=[_0x4bbb2a(0x11c),_0x4bbb2a(0x116),_0x4bbb2a(0x87),'Papavero'],COLOR_TEXT_MAP={'Bottiglia':_0x4bbb2a(0x125),'Napoli':_0x4bbb2a(0x89),'Nero':_0x4bbb2a(0xbf),'Papavero':_0x4bbb2a(0xfc)},COLOR_DISPLAY_MAP={'Bottiglia':'Bottle\x20Green','Napoli':_0x4bbb2a(0xa6),'Nero':_0x4bbb2a(0x87),'Papavero':_0x4bbb2a(0xef)};let selectedColor=null,state={'limit':0x0,'used':0x0,'qty':0x0,'mode':null,'length':0x55,'dia':0x7,'history':{},'historyOrder':[]};const L=document['getElementById']('L'),D=document[_0x4bbb2a(0xf9)]('D'),c1=document[_0x4bbb2a(0xf9)]('c1'),c2=document[_0x4bbb2a(0xf9)]('c2'),genBtn=document[_0x4bbb2a(0xf9)]('genBtn'),copyBtn=document[_0x4bbb2a(0xf9)](_0x4bbb2a(0xf5)),hintSpan=document[_0x4bbb2a(0xf9)](_0x4bbb2a(0xa2)),dcSpan=document[_0x4bbb2a(0xf9)]('Dc'),colorSelectTitleSpan=document[_0x4bbb2a(0xf9)](_0x4bbb2a(0x88)),qtyPlusBtn=document[_0x4bbb2a(0xf9)]('qtyPlusBtn'),qtyMinusBtn=document[_0x4bbb2a(0xf9)](_0x4bbb2a(0x10b)),previewDiv=document[_0x4bbb2a(0xf9)](_0x4bbb2a(0x126));function updateTitleColor(){const _0x39711e=_0x4bbb2a;if(!colorSelectTitleSpan)return;selectedColor&&COLOR_TEXT_MAP[selectedColor]?colorSelectTitleSpan[_0x39711e(0x12f)][_0x39711e(0x120)]=COLOR_TEXT_MAP[selectedColor]:colorSelectTitleSpan[_0x39711e(0x12f)]['color']='#ffffff';}function stopBlinking(){const _0x48c43e=_0x4bbb2a;if(hintSpan)hintSpan[_0x48c43e(0xc0)][_0x48c43e(0x13a)](_0x48c43e(0xa8));if(copyBtn)copyBtn[_0x48c43e(0xc0)][_0x48c43e(0x13a)]('blink');if(c1)c1[_0x48c43e(0xc0)]['remove']('blink');if(c2)c2[_0x48c43e(0xc0)][_0x48c43e(0x13a)](_0x48c43e(0xa8));const _0x2677bd=document['getElementById'](_0x48c43e(0xa0));if(_0x2677bd)_0x2677bd[_0x48c43e(0xc0)][_0x48c43e(0x13a)]('blink');}function triggerBlink(_0xebf1c8){const _0xe9b5aa=_0x4bbb2a;if(!_0xebf1c8)return;_0xebf1c8['classList']['remove'](_0xe9b5aa(0xa8)),void _0xebf1c8[_0xe9b5aa(0x12b)],requestAnimationFrame(()=>{const _0x3b5a8b=_0xe9b5aa;_0xebf1c8[_0x3b5a8b(0xc0)][_0x3b5a8b(0xd0)](_0x3b5a8b(0xa8));});}function initColorSelector(){const _0x124af7=_0x4bbb2a,_0x1d5925=document['querySelectorAll'](_0x124af7(0x99));_0x1d5925['forEach'](_0x3ea05a=>{const _0x16b380=_0x124af7;_0x3ea05a['addEventListener'](_0x16b380(0x12c),_0x2321e0=>{const _0x56f579=_0x16b380;_0x2321e0[_0x56f579(0xeb)]();const _0x26f825=state[_0x56f579(0xc5)]>=0x1,_0x51f938=state['mode']!==null;if(!_0x26f825||!_0x51f938){toast('Set\x20limit\x20&\x20select\x20Clip\x20Type\x20first');return;}const _0x35ea1d=_0x3ea05a[_0x56f579(0x98)](_0x56f579(0x13b));_0x35ea1d&&COLOR_LIST[_0x56f579(0x8f)](_0x35ea1d)&&(selectedColor=_0x35ea1d,updateColorActiveUI(),updateTitleColor(),renderPreviewText(),render(),save(),stopColorBlink());});});}function updateColorActiveUI(){const _0x454803=_0x4bbb2a,_0x459d33=document[_0x454803(0xb1)](_0x454803(0x99));_0x459d33[_0x454803(0x135)](_0x1ba8ab=>{const _0x34dd59=_0x454803,_0x393f1b=_0x1ba8ab[_0x34dd59(0x98)](_0x34dd59(0x13b));selectedColor&&_0x393f1b===selectedColor?_0x1ba8ab[_0x34dd59(0xc0)]['add'](_0x34dd59(0xcf)):_0x1ba8ab[_0x34dd59(0xc0)]['remove'](_0x34dd59(0xcf));});}function renderPreviewText(){const _0x8093ef=_0x4bbb2a;if(!previewDiv)return;const _0x5ca0af=state['mode']!==null,_0x3e910a=state['mode']?state[_0x8093ef(0x133)][_0x8093ef(0x129)](0x0)[_0x8093ef(0x131)]()+state[_0x8093ef(0x133)]['slice'](0x1):'—',_0x574d9a=_0x8093ef(0x138);let _0x1a71f7='?';if(state[_0x8093ef(0x133)])_0x1a71f7=toolCode();else _0x1a71f7='—';if(_0x5ca0af&&selectedColor){const _0x162dc9=COLOR_DISPLAY_MAP[selectedColor]||selectedColor,_0xe54dc9=COLOR_TEXT_MAP[selectedColor]||_0x8093ef(0xde),_0xf30eb=_0x8093ef(0xe2)+_0xe54dc9+_0x8093ef(0x118)+_0x162dc9+'</span>',_0x2f0b2b=_0x1a71f7+'\x20×\x20<span\x20style=\x27color:'+_0x574d9a+';\x20font-weight:600;\x27>'+state[_0x8093ef(0x139)]+_0x8093ef(0xe5)+_0x8093ef(0x10f)+_0x574d9a+';\x20font-weight:600;\x27>'+clean(state[_0x8093ef(0xe7)])+'</span>-Ø<span\x20style=\x27color:'+_0x574d9a+_0x8093ef(0xf2)+clean(state[_0x8093ef(0xf1)])+'</span>-'+'<span\x20style=\x27color:'+_0x574d9a+_0x8093ef(0xf2)+_0x3e910a+_0x8093ef(0xdc)+_0xf30eb+')';previewDiv[_0x8093ef(0xe1)]=_0x2f0b2b;}else{if(_0x5ca0af&&!selectedColor){const _0x459f08=_0x1a71f7+_0x8093ef(0x107)+_0x574d9a+_0x8093ef(0xf2)+state[_0x8093ef(0x139)]+'</span>'+'\x20(L<span\x20style=\x27color:'+_0x574d9a+_0x8093ef(0xf2)+clean(state['length'])+_0x8093ef(0xb5)+_0x574d9a+_0x8093ef(0xf2)+clean(state[_0x8093ef(0xf1)])+_0x8093ef(0xdc)+_0x8093ef(0x10c)+_0x574d9a+';\x20font-weight:600;\x27>'+_0x3e910a+_0x8093ef(0xce);previewDiv[_0x8093ef(0xe1)]=_0x459f08;}else{const _0x59a5e4=_0x1a71f7+_0x8093ef(0x107)+_0x574d9a+_0x8093ef(0xf2)+state[_0x8093ef(0x139)]+_0x8093ef(0xe5)+_0x8093ef(0x10f)+_0x574d9a+_0x8093ef(0xf2)+clean(state[_0x8093ef(0xe7)])+_0x8093ef(0xb5)+_0x574d9a+_0x8093ef(0xf2)+clean(state[_0x8093ef(0xf1)])+_0x8093ef(0xdc)+_0x8093ef(0x10c)+_0x574d9a+_0x8093ef(0xf2)+_0x3e910a+_0x8093ef(0x11f);previewDiv[_0x8093ef(0xe1)]=_0x59a5e4;}}}function applyModeConstraints(){const _0x55c709=_0x4bbb2a;if(state[_0x55c709(0x133)]===_0x55c709(0x9c)){D[_0x55c709(0x12e)]=0x7,D[_0x55c709(0x90)]=18.5;if(state['dia']<0x7)state[_0x55c709(0xf1)]=0x7;if(state[_0x55c709(0xf1)]>18.5)state[_0x55c709(0xf1)]=18.5;}else{if(state[_0x55c709(0x133)]===_0x55c709(0xd3)){D[_0x55c709(0x12e)]=8.5,D[_0x55c709(0x90)]=20.5;if(state[_0x55c709(0xf1)]<8.5)state['dia']=8.5;if(state[_0x55c709(0xf1)]>20.5)state[_0x55c709(0xf1)]=20.5;}}if(D)D[_0x55c709(0x8a)]=state[_0x55c709(0xf1)];}function save(){const _0x53baf1=_0x4bbb2a,_0x507a2d={...state,'selectedColor':selectedColor,'historyOrder':state['historyOrder']};localStorage[_0x53baf1(0xec)]('psfs_v50_color',JSON['stringify'](_0x507a2d));}function load(){const _0x33e806=_0x4bbb2a;try{const _0x5e472d=JSON[_0x33e806(0xf6)](localStorage[_0x33e806(0x8e)](_0x33e806(0xe8)));_0x5e472d?(state[_0x33e806(0xc5)]=_0x5e472d[_0x33e806(0xc5)]||0x0,state[_0x33e806(0x12d)]=_0x5e472d[_0x33e806(0x12d)]||0x0,state[_0x33e806(0x139)]=_0x5e472d[_0x33e806(0x139)]||0x0,state[_0x33e806(0x133)]=_0x5e472d[_0x33e806(0x133)]||null,state[_0x33e806(0xe7)]=_0x5e472d[_0x33e806(0xe7)]||0x55,state[_0x33e806(0xf1)]=_0x5e472d[_0x33e806(0xf1)]||0x7,state[_0x33e806(0xbc)]=_0x5e472d[_0x33e806(0xbc)]||{},state[_0x33e806(0xfa)]=_0x5e472d[_0x33e806(0xfa)]||[],selectedColor=_0x5e472d[_0x33e806(0xd7)]!==undefined?_0x5e472d[_0x33e806(0xd7)]:null):(selectedColor=null,state[_0x33e806(0xfa)]=[]);if(selectedColor&&!COLOR_LIST[_0x33e806(0x8f)](selectedColor))selectedColor=null;state[_0x33e806(0xfa)]?state[_0x33e806(0xfa)]=state[_0x33e806(0xfa)]['filter'](_0x31114a=>state[_0x33e806(0xbc)][_0x31114a]):state[_0x33e806(0xfa)]=[];}catch(_0xbc2a4d){selectedColor=null,state['historyOrder']=[];}updateTitleColor();}load(),applyModeConstraints(),updateColorActiveUI(),L['oninput']=_0x5918fe=>{const _0x56b3e7=_0x4bbb2a;state[_0x56b3e7(0xe7)]=+_0x5918fe[_0x56b3e7(0xdd)]['value'],render(),save();},D[_0x4bbb2a(0x122)]=_0x2255b8=>{const _0x366795=_0x4bbb2a;state[_0x366795(0xf1)]=+_0x2255b8['target'][_0x366795(0x8a)],render(),save();};function setLimit(_0x36486b){const _0x2fa688=_0x4bbb2a,_0x1b8cc5=Math[_0x2fa688(0x90)](0x0,state['limit']+_0x36486b);state[_0x2fa688(0xc5)]=_0x1b8cc5,state[_0x2fa688(0xc5)]===0x0&&(state[_0x2fa688(0x133)]=null,selectedColor=null,c1['classList'][_0x2fa688(0x13a)](_0x2fa688(0xcf)),c2[_0x2fa688(0xc0)]['remove']('active'),updateColorActiveUI(),updateTitleColor()),render(),save();}function mode(_0x2a89db){const _0x320ac2=_0x4bbb2a;if(state['limit']===0x0){toast(_0x320ac2(0x111));return;}state[_0x320ac2(0x133)]=_0x2a89db,selectedColor=null,updateTitleColor(),applyModeConstraints(),c1[_0x320ac2(0xc0)][_0x320ac2(0x9b)](_0x320ac2(0xcf),_0x2a89db==='clipped'),c2[_0x320ac2(0xc0)][_0x320ac2(0x9b)](_0x320ac2(0xcf),_0x2a89db===_0x320ac2(0xd3)),updateColorActiveUI(),render(),save();}function lenStep(_0x494d33){const _0x57f07a=_0x4bbb2a;state[_0x57f07a(0xe7)]=Math[_0x57f07a(0x90)](0x55,Math[_0x57f07a(0x12e)](0xa5,+(state['length']+_0x494d33)['toFixed'](0x1))),L['value']=state['length'],render(),save();}function diaStep(_0x4656a1){const _0x46565a=_0x4bbb2a;state[_0x46565a(0xf1)]=Math['max'](+D[_0x46565a(0x12e)],Math[_0x46565a(0x12e)](+D[_0x46565a(0x90)],+(state[_0x46565a(0xf1)]+_0x4656a1)[_0x46565a(0x112)](0x1))),D[_0x46565a(0x8a)]=state[_0x46565a(0xf1)],render(),save();}function toolCode(){const _0x3f3d5e=_0x4bbb2a;if(!state[_0x3f3d5e(0x133)])return'?';return lenCode(state['length'])+diaCode(state[_0x3f3d5e(0xf1)]);}function lenCode(_0x12ca9c){const _0x4fc3c7=_0x4bbb2a,_0x224297=[{'max':0x66},{'max':0x76},{'max':0x87},{'max':0x96},{'max':0xa5}];for(let _0x388ca3=0x0;_0x388ca3<_0x224297[_0x4fc3c7(0xe7)];_0x388ca3++){if(_0x12ca9c<=_0x224297[_0x388ca3][_0x4fc3c7(0x90)])return _0x388ca3+0x1;}return 0x5;}function diaCode(_0x3cc3df){const _0x142afe=_0x4bbb2a;if(!state['mode'])return'A';const _0x534d8f=state[_0x142afe(0x133)]==='clipped'?[{'max':8.5,'code':'A'},{'max':10.5,'code':'B'},{'max':12.5,'code':'C'},{'max':14.5,'code':'D'},{'max':16.5,'code':'E'},{'max':18.5,'code':'F'}]:[{'max':10.5,'code':'A'},{'max':12.5,'code':'B'},{'max':14.5,'code':'C'},{'max':16.5,'code':'D'},{'max':18.5,'code':'E'},{'max':20.5,'code':'F'}];for(const _0xf4e0e5 of _0x534d8f){if(_0x3cc3df<=_0xf4e0e5[_0x142afe(0x90)])return _0xf4e0e5[_0x142afe(0xbe)];}return'A';}function getDiameterText(){const _0x549651=_0x4bbb2a;if(!state[_0x549651(0x133)])return'Ø\x20—';const _0x590243=diaCode(state[_0x549651(0xf1)]),_0xfef35c=[_0x549651(0x10a),_0x549651(0x130),_0x549651(0xb4),'Standard',_0x549651(0xf3),_0x549651(0xfb)],_0x579589=_0x590243[_0x549651(0xf0)](0x0)-0x41;return'Ø\x20'+(_0xfef35c[_0x579589]||'—');}function getDiameterClass(){const _0x5dab02=_0x4bbb2a;if(!state[_0x5dab02(0x133)])return _0x5dab02(0xb6);const _0x194973=diaCode(state[_0x5dab02(0xf1)]),_0x106168=_0x194973[_0x5dab02(0xf0)](0x0)-0x41;return _0x5dab02(0x117)+(['d1','d2','d3','d4','d5','d6'][_0x106168]||'tag');}function handleQtyChange(_0x5832c4){const _0x3d8e30=_0x4bbb2a;if(state['limit']===0x0){toast(_0x3d8e30(0x110));return;}if(state[_0x3d8e30(0x133)]===null){toast(_0x3d8e30(0xff));return;}if(!selectedColor){showColorPickHint();return;}const _0x264ee5=Math[_0x3d8e30(0x90)](0x0,state['qty']+_0x5832c4);if(state[_0x3d8e30(0x12d)]+_0x264ee5>state[_0x3d8e30(0xc5)]){toast(_0x3d8e30(0xd4));return;}state[_0x3d8e30(0x139)]=_0x264ee5,render(),save();}function qty(_0x284e10){handleQtyChange(_0x284e10);}function showConfirm(){const _0x18e0eb=_0x4bbb2a;if(state[_0x18e0eb(0xc5)]===0x0||state['mode']===null){toast(_0x18e0eb(0xff));return;}if(!selectedColor){showColorPickHint();return;}if(state[_0x18e0eb(0x139)]<=0x0)return toast(_0x18e0eb(0x136));if(state[_0x18e0eb(0x12d)]+state['qty']>state[_0x18e0eb(0xc5)])return toast(_0x18e0eb(0xd4));const _0x199e1d=state[_0x18e0eb(0x133)]?state[_0x18e0eb(0x133)][_0x18e0eb(0x129)](0x0)[_0x18e0eb(0x131)]()+state[_0x18e0eb(0x133)][_0x18e0eb(0xc9)](0x1):'—',_0x190c90=_0x18e0eb(0x138),_0x4d93f1=toolCode(),_0x9b378a=COLOR_DISPLAY_MAP[selectedColor]||selectedColor,_0x35be92=COLOR_TEXT_MAP[selectedColor]||_0x18e0eb(0xde);document[_0x18e0eb(0xf9)](_0x18e0eb(0x127))[_0x18e0eb(0xe1)]=_0x4d93f1+_0x18e0eb(0x107)+_0x190c90+_0x18e0eb(0xf2)+state[_0x18e0eb(0x139)]+_0x18e0eb(0xe5)+'\x20(L<span\x20style=\x27color:'+_0x190c90+_0x18e0eb(0xf2)+clean(state[_0x18e0eb(0xe7)])+_0x18e0eb(0xb5)+_0x190c90+';\x20font-weight:600;\x27>'+clean(state['dia'])+_0x18e0eb(0xdc)+_0x18e0eb(0x10c)+_0x190c90+';\x20font-weight:600;\x27>'+_0x199e1d+_0x18e0eb(0xcd)+_0x35be92+_0x18e0eb(0xf2)+_0x9b378a+_0x18e0eb(0x11f);const _0xc36358=document['getElementById'](_0x18e0eb(0xa0));_0xc36358&&(_0xc36358[_0x18e0eb(0xc0)][_0x18e0eb(0x13a)](_0x18e0eb(0xa8)),void _0xc36358[_0x18e0eb(0x12b)],requestAnimationFrame(()=>{const _0x36cac1=_0x18e0eb;_0xc36358['classList']['add'](_0x36cac1(0xa8));})),document[_0x18e0eb(0xf9)](_0x18e0eb(0xc4))[_0x18e0eb(0x12f)]['display']='flex';}function hideConfirm(){const _0x2029e4=_0x4bbb2a;document[_0x2029e4(0xf9)]('confirmPanel')[_0x2029e4(0x12f)][_0x2029e4(0xaa)]=_0x2029e4(0x11b);}function doSave(){const _0x5bff9f=_0x4bbb2a;if(!selectedColor){showColorPickHint();return;}const _0x5227f7=toolCode(),_0x315d49=selectedColor,_0x2340a6=_0x5227f7+_0x315d49;if(!state[_0x5bff9f(0xbc)][_0x2340a6])state[_0x5bff9f(0xbc)][_0x2340a6]={'qty':0x0,'code':_0x5227f7,'color':_0x315d49,'lengthVal':state['length'],'diaVal':state[_0x5bff9f(0xf1)],'modeVal':state['mode'],'timestamp':Date['now']()},state['historyOrder'][_0x5bff9f(0xa1)](_0x2340a6);else{state[_0x5bff9f(0xbc)][_0x2340a6][_0x5bff9f(0xe3)]=Date[_0x5bff9f(0xbb)]();const _0x50a61e=state[_0x5bff9f(0xfa)][_0x5bff9f(0xdb)](_0x2340a6);if(_0x50a61e!==-0x1)state[_0x5bff9f(0xfa)][_0x5bff9f(0xac)](_0x50a61e,0x1);state[_0x5bff9f(0xfa)][_0x5bff9f(0xa1)](_0x2340a6);}state['history'][_0x2340a6][_0x5bff9f(0x139)]+=state[_0x5bff9f(0x139)],state[_0x5bff9f(0x12d)]+=state[_0x5bff9f(0x139)],c1['classList'][_0x5bff9f(0x13a)](_0x5bff9f(0xcf)),c2[_0x5bff9f(0xc0)][_0x5bff9f(0x13a)](_0x5bff9f(0xcf)),state['mode']=null,state[_0x5bff9f(0x139)]=0x0,selectedColor=null,updateColorActiveUI(),updateTitleColor(),hideConfirm(),render(),save(),toast(state[_0x5bff9f(0x12d)]+(state[_0x5bff9f(0x12d)]===0x1?_0x5bff9f(0x106):'\x20Fits\x20Added'));}function showClearConfirm(){const _0x56860d=_0x4bbb2a;document['getElementById']('clearConfirmPanel')[_0x56860d(0x12f)]['display']='flex';}function hideClearConfirm(){const _0xb3447b=_0x4bbb2a;document[_0xb3447b(0xf9)](_0xb3447b(0xb9))[_0xb3447b(0x12f)]['display']=_0xb3447b(0x11b);}function doClear(){const _0x41cf0c=_0x4bbb2a;state={'limit':0x0,'used':0x0,'qty':0x0,'mode':null,'length':0x55,'dia':0x7,'history':{},'historyOrder':[]},selectedColor=null,localStorage[_0x41cf0c(0xf7)]('psfs_v50_color');if(L)L[_0x41cf0c(0x8a)]=0x55;if(D)D['value']=0x7;c1['classList'][_0x41cf0c(0x13a)](_0x41cf0c(0xcf)),c2[_0x41cf0c(0xc0)][_0x41cf0c(0x13a)](_0x41cf0c(0xcf)),updateColorActiveUI(),updateTitleColor(),render(),toast('Cleared'),hideClearConfirm();}function showDeleteConfirm(_0x106f46,_0x307794){const _0x4fb70a=_0x4bbb2a;pendingDeleteKey=_0x106f46,pendingDeleteQty=_0x307794,document[_0x4fb70a(0xf9)](_0x4fb70a(0x8d))['style'][_0x4fb70a(0xaa)]=_0x4fb70a(0xb7);}function hideDeleteConfirm(){const _0x96cd8c=_0x4bbb2a;document[_0x96cd8c(0xf9)](_0x96cd8c(0x8d))['style'][_0x96cd8c(0xaa)]=_0x96cd8c(0x11b),pendingDeleteKey=null,pendingDeleteQty=null;}function doDelete(){const _0x42f508=_0x4bbb2a;if(pendingDeleteKey){state[_0x42f508(0x12d)]-=pendingDeleteQty,delete state[_0x42f508(0xbc)][pendingDeleteKey];const _0x3078db=state[_0x42f508(0xfa)][_0x42f508(0xdb)](pendingDeleteKey);if(_0x3078db!==-0x1)state[_0x42f508(0xfa)]['splice'](_0x3078db,0x1);render(),save(),toast(_0x42f508(0xdf));}hideDeleteConfirm();}function applyBlinking(){const _0xbc9993=_0x4bbb2a;if(state['limit']===0x0){if(hintSpan&&hintSpan[_0xbc9993(0x12f)][_0xbc9993(0xaa)]!==_0xbc9993(0x11b))triggerBlink(hintSpan);}if(state['limit']>=0x1&&state['mode']===null){if(c1)triggerBlink(c1);if(c2)triggerBlink(c2);}const _0x47b086=Object[_0xbc9993(0x115)](state[_0xbc9993(0xbc)])[_0xbc9993(0x102)]((_0x3a3159,_0x3c33be)=>_0x3a3159+_0x3c33be['qty'],0x0);if(state[_0xbc9993(0xc5)]>0x0&&_0x47b086===state['limit']){if(copyBtn&&!copyBtn[_0xbc9993(0xd6)])triggerBlink(copyBtn);}}function _0x11fa(){const _0x5330f8=['appendChild','Poppy\x20Red','charCodeAt','dia',';\x20font-weight:600;\x27>','Wide','tagName','copyBtn','parse','removeItem','console','getElementById','historyOrder','Extra\x20Wide','#e34234','lengthVal','onclick','Select\x20Clipped\x20or\x20Clipless\x20first','diaVal','exception','reduce','__proto__','ontouchstart','bind','\x20Fit\x20Added','\x20×\x20<span\x20style=\x27color:','3668988nYclnD','516485kEQFXh','Micro','qtyMinusBtn','<span\x20style=\x27color:','innerText','block','\x20(L<span\x20style=\x27color:','Set\x20Qty\x20First','Set\x20supported\x20quantity\x20first','toFixed','.card:nth-of-type(2)\x20.switch\x20button','item','values','Napoli','tag\x20',';\x20font-weight:\x20600;\x22>','Copied!','colorLabel','none','Bottiglia','trace','24874140DwgjzV','</span>)','color','inline-block','oninput','warn','9bIwLxU','#2e8b57','preview','confirmText','\x20(150~165\x20mm)','charAt','opacity','offsetWidth','click','used','min','style','Ultra\x20Slim','toUpperCase','constructor','mode','toString','forEach','Qty\x20is\x200','keys','#f97316','qty','remove','data-color','sort','Nero','colorSelectTitle','#e5c07b','value',';\x22>','11VSrvoi','deleteConfirmPanel','getItem','includes','max','</span>)\x0a\x20\x20\x20\x20','.capsule-stepper\x20button','return\x20(function()\x20','(((.+)+)+)+$','mousedown','54TmQROl','toast','getAttribute','.color-chip','className','toggle','clipped','limitVal','error','Diameter','confirmHint','push','hint','auto','82009VdZlsb','586412BqUbZX','Naples\x20Yellow','modeVal','blink','div','display','offsetHeight','splice','2rOqjbd','.card:nth-of-type(2)\x20.capsule-stepper\x20button','DEL','search','querySelectorAll','</span>-Ø<span\x20class=\x22highlight-number\x22>','\x0a\x20\x20\x20\x20\x20\x20','Slim','</span>-Ø<span\x20style=\x27color:','tag','flex','Select\x20Clip\x20Type','clearConfirmPanel','addEventListener','now','history','\x20×\x20','code','#4a4a4a','classList','writeText','pointerEvents','createElement','confirmPanel','limit','button','Configured\x20','mouseup','slice','{}.constructor(\x22return\x20this\x22)(\x20)','9160400wTfAcj','1700390WsALTf','</span>-<span\x20style=\x27color:','</span>-<span\x20style=\x27color:#ffb347;\x20font-weight:600;\x27>?</span>)','active','add','apply','info','clipless','Limit\x20Reached','7TspVBs','disabled','selectedColor','\x20(L','\x20×\x20<span\x20class=\x22highlight-number\x22>','.card:nth-of-type(3)\x20.capsule-stepper\x20button','indexOf','</span>-','target','#ffb347','Deleted','Copy\x20All\x20available\x20only\x20when\x20quota\x20is\x20fully\x20used.','innerHTML','<span\x20style=\x22color:\x20','timestamp','table','</span>','previewCount','length','psfs_v50_color','animation','mouseleave','stopPropagation','setItem','prototype'];_0x11fa=function(){return _0x5330f8;};return _0x11fa();}function render(){const _0xb9ba25=_0x4bbb2a,_0x39036e=document[_0xb9ba25(0xf9)]('supportedQtyTitle');if(state[_0xb9ba25(0xc5)]>=0x1)_0x39036e[_0xb9ba25(0x12f)]['display']=_0xb9ba25(0x10e);else _0x39036e[_0xb9ba25(0x12f)][_0xb9ba25(0xaa)]='none';document[_0xb9ba25(0xf9)](_0xb9ba25(0x9d))['innerText']=state['limit'];state[_0xb9ba25(0xc5)]===0x0?hintSpan['style'][_0xb9ba25(0xaa)]=_0xb9ba25(0x121):hintSpan['style']['display']=_0xb9ba25(0x11b);document[_0xb9ba25(0xf9)]('Lv')['innerText']=state['length']['toFixed'](0x1),document['getElementById']('Dv')[_0xb9ba25(0x10d)]=state[_0xb9ba25(0xf1)][_0xb9ba25(0x112)](0x1);const _0x11d28b=lenCode(state[_0xb9ba25(0xe7)]);document[_0xb9ba25(0xf9)]('Lc')['innerText']=['XS','S','M','L','XL'][_0x11d28b-0x1]+_0xb9ba25(0x128),document[_0xb9ba25(0xf9)]('Lc')[_0xb9ba25(0x9a)]=_0xb9ba25(0x117)+['xs','s','m','l','xl'][_0x11d28b-0x1];if(state[_0xb9ba25(0x133)]!==null)dcSpan['innerText']=getDiameterText(),dcSpan['className']=getDiameterClass();else{if(state[_0xb9ba25(0xc5)]===0x0)dcSpan[_0xb9ba25(0x10d)]=_0xb9ba25(0x9f),dcSpan[_0xb9ba25(0x9a)]=_0xb9ba25(0xb6);else state[_0xb9ba25(0xc5)]>=0x1&&state[_0xb9ba25(0x133)]===null?(dcSpan[_0xb9ba25(0x10d)]=_0xb9ba25(0xb8),dcSpan[_0xb9ba25(0x9a)]='tag\x20mode-hint'):(dcSpan['innerText']=_0xb9ba25(0x9f),dcSpan[_0xb9ba25(0x9a)]='tag');}document[_0xb9ba25(0xf9)]('q')[_0xb9ba25(0x10d)]=state[_0xb9ba25(0x139)],renderPreviewText(),document[_0xb9ba25(0xf9)](_0xb9ba25(0xe6))[_0xb9ba25(0xe1)]=state[_0xb9ba25(0x12d)]+'/'+state[_0xb9ba25(0xc5)];const _0x104319=state[_0xb9ba25(0x133)]!==null,_0x27f500=state[_0xb9ba25(0xc5)]>=0x1;qtyMinusBtn&&qtyPlusBtn&&(qtyMinusBtn['disabled']=![],qtyPlusBtn[_0xb9ba25(0xd6)]=![],qtyMinusBtn[_0xb9ba25(0xc0)]['remove']('qty-btn-disabled'),qtyPlusBtn[_0xb9ba25(0xc0)][_0xb9ba25(0x13a)]('qty-btn-disabled'));document[_0xb9ba25(0xb1)](_0xb9ba25(0x113))[_0xb9ba25(0x135)](_0x34b82e=>_0x34b82e[_0xb9ba25(0xd6)]=!_0x27f500),document[_0xb9ba25(0xb1)](_0xb9ba25(0xae))[_0xb9ba25(0x135)](_0x561cd4=>_0x561cd4[_0xb9ba25(0xd6)]=!(_0x27f500&&_0x104319));if(D)D[_0xb9ba25(0xd6)]=!(_0x27f500&&_0x104319);if(L)L['disabled']=!(_0x27f500&&_0x104319);document[_0xb9ba25(0xb1)](_0xb9ba25(0xda))[_0xb9ba25(0x135)](_0x1a0a36=>_0x1a0a36['disabled']=!(_0x27f500&&_0x104319));const _0x1690b6=_0x27f500&&_0x104319&&selectedColor&&state[_0xb9ba25(0x139)]>0x0;genBtn[_0xb9ba25(0xd6)]=!_0x1690b6;const _0xfd2e03=document[_0xb9ba25(0xb1)]('.color-chip');_0xfd2e03['forEach'](_0x13e6c7=>{const _0x5468fb=_0xb9ba25;_0x27f500&&_0x104319?(_0x13e6c7[_0x5468fb(0x12f)][_0x5468fb(0xc2)]=_0x5468fb(0xa3),_0x13e6c7[_0x5468fb(0xc0)][_0x5468fb(0x13a)](_0x5468fb(0xd6))):(_0x13e6c7['style'][_0x5468fb(0xc2)]=_0x5468fb(0x11b),_0x13e6c7[_0x5468fb(0xc0)][_0x5468fb(0xd0)](_0x5468fb(0xd6)));});const _0x481bc8=Object[_0xb9ba25(0x115)](state[_0xb9ba25(0xbc)])['reduce']((_0x28939f,_0x477838)=>_0x28939f+_0x477838[_0xb9ba25(0x139)],0x0);copyBtn['disabled']=_0x481bc8!==state['limit'],drawHistory(),applyBlinking(),updateColorActiveUI(),updateTitleColor(),save();}function drawHistory(){const _0x5a38f9=_0x4bbb2a,_0x4683ec=document[_0x5a38f9(0xf9)](_0x5a38f9(0xbc));_0x4683ec[_0x5a38f9(0xe1)]='';const _0x2ac492=state['historyOrder']||[];for(const _0x22acf5 of _0x2ac492){const _0x3b8b9d=state[_0x5a38f9(0xbc)][_0x22acf5];if(!_0x3b8b9d)continue;const _0x2e58a4=document['createElement'](_0x5a38f9(0xa9));_0x2e58a4[_0x5a38f9(0x9a)]=_0x5a38f9(0x114);const _0x1c5171=_0x3b8b9d[_0x5a38f9(0x139)],_0x35a146=clean(_0x3b8b9d[_0x5a38f9(0xfd)]),_0xff409c=clean(_0x3b8b9d[_0x5a38f9(0x100)]),_0x12b677=_0x3b8b9d[_0x5a38f9(0xa7)][_0x5a38f9(0x129)](0x0)[_0x5a38f9(0x131)]()+_0x3b8b9d[_0x5a38f9(0xa7)][_0x5a38f9(0xc9)](0x1),_0x2234b2=COLOR_DISPLAY_MAP[_0x3b8b9d['color']]||_0x3b8b9d['color'],_0x38e757=COLOR_TEXT_MAP[_0x3b8b9d[_0x5a38f9(0x120)]]||_0x5a38f9(0xde),_0x49ee33=document[_0x5a38f9(0xc3)]('span');_0x49ee33[_0x5a38f9(0x9a)]='item-code',_0x49ee33[_0x5a38f9(0xe1)]=_0x5a38f9(0xb3)+_0x3b8b9d['code']+_0x5a38f9(0xd9)+_0x1c5171+'</span>\x20\x0a\x20\x20\x20\x20\x20\x20(L<span\x20class=\x22highlight-number\x22>'+_0x35a146+_0x5a38f9(0xb2)+_0xff409c+'</span>-\x0a\x20\x20\x20\x20\x20\x20<span\x20class=\x22highlight-number\x22>'+_0x12b677+'</span>-<span\x20class=\x22color-name-in-history\x22\x20style=\x22color:\x20'+_0x38e757+_0x5a38f9(0x8b)+_0x2234b2+_0x5a38f9(0x91);const _0x1c97ef=document[_0x5a38f9(0xc3)](_0x5a38f9(0xc6));_0x1c97ef[_0x5a38f9(0x9a)]='del',_0x1c97ef[_0x5a38f9(0x10d)]=_0x5a38f9(0xaf),_0x1c97ef[_0x5a38f9(0xfe)]=_0x16b2dc=>{const _0x1f738e=_0x5a38f9;_0x16b2dc[_0x1f738e(0xeb)](),showDeleteConfirm(_0x22acf5,_0x3b8b9d['qty']);},_0x2e58a4[_0x5a38f9(0xee)](_0x49ee33),_0x2e58a4[_0x5a38f9(0xee)](_0x1c97ef),_0x4683ec['appendChild'](_0x2e58a4);}}function copy(){const _0x115fe6=_0x4bbb2a,_0x3fb4d4=Object[_0x115fe6(0x115)](state['history'])[_0x115fe6(0x102)]((_0xdf084f,_0x111570)=>_0xdf084f+_0x111570[_0x115fe6(0x139)],0x0);if(_0x3fb4d4!==state['limit']){toast(_0x115fe6(0xe0));return;}if(!Object[_0x115fe6(0x137)](state[_0x115fe6(0xbc)])[_0x115fe6(0xe7)])return;const _0x50cee9=[];for(const _0x203c87 in state[_0x115fe6(0xbc)]){const _0x2eb15d=state[_0x115fe6(0xbc)][_0x203c87],_0x755af3=parseInt(_0x2eb15d[_0x115fe6(0xbe)],0xa);_0x50cee9['push']({'codeNum':_0x755af3,'code':_0x2eb15d[_0x115fe6(0xbe)],'qty':_0x2eb15d['qty'],'lengthVal':_0x2eb15d[_0x115fe6(0xfd)],'diaVal':_0x2eb15d['diaVal'],'modeVal':_0x2eb15d[_0x115fe6(0xa7)],'color':_0x2eb15d[_0x115fe6(0x120)]});}_0x50cee9[_0x115fe6(0x13c)]((_0x19b0a1,_0x45a416)=>_0x45a416['codeNum']-_0x19b0a1['codeNum']);let _0x40b938=_0x115fe6(0xc7)+state[_0x115fe6(0x12d)]+'/'+state['limit']+'\x0a\x0a';for(const _0x1ff024 of _0x50cee9){const _0x3d57c3=_0x1ff024[_0x115fe6(0xa7)][_0x115fe6(0x129)](0x0)[_0x115fe6(0x131)]()+_0x1ff024[_0x115fe6(0xa7)][_0x115fe6(0xc9)](0x1),_0x1c362a=COLOR_DISPLAY_MAP[_0x1ff024[_0x115fe6(0x120)]]||_0x1ff024['color'];_0x40b938+=_0x1ff024[_0x115fe6(0xbe)]+_0x115fe6(0xbd)+_0x1ff024[_0x115fe6(0x139)]+_0x115fe6(0xd8)+clean(_0x1ff024[_0x115fe6(0xfd)])+'-Ø'+clean(_0x1ff024[_0x115fe6(0x100)])+'-'+_0x3d57c3+'-'+_0x1c362a+')\x0a';}navigator['clipboard'][_0x115fe6(0xc1)](_0x40b938),toast(_0x115fe6(0x119));}function toast(_0x24bcb){const _0x2f79c0=_0x4bbb2a,_0x302652=document[_0x2f79c0(0xf9)](_0x2f79c0(0x97));_0x302652[_0x2f79c0(0x10d)]=_0x24bcb,_0x302652[_0x2f79c0(0x12f)][_0x2f79c0(0x12a)]=0x1,setTimeout(()=>_0x302652['style']['opacity']=0x0,0x5dc);}document[_0x4bbb2a(0xba)](_0x4bbb2a(0x12c),_0x2c23f0=>{const _0x37bbc1=_0x4bbb2a;_0x2c23f0[_0x37bbc1(0xdd)]&&_0x2c23f0[_0x37bbc1(0xdd)][_0x37bbc1(0xf4)]==='BUTTON'&&stopBlinking();});function enableLongPressStepper(){const _0x2fc0a4=_0x4bbb2a,_0x4ffd75=_0x2fc0a4(0x104)in window||navigator['maxTouchPoints']>0x0;document[_0x2fc0a4(0xb1)](_0x2fc0a4(0x92))[_0x2fc0a4(0x135)](_0x197011=>{const _0x9a6309=_0x2fc0a4;if(_0x4ffd75)return;let _0x25bc14=null;const _0x23706b=()=>{if(_0x25bc14)return;_0x25bc14=setTimeout(()=>{const _0x2f6524=_0x52bb;_0x25bc14=setInterval(()=>_0x197011[_0x2f6524(0x12c)](),0x50);},0x12c);},_0x4968c8=()=>{clearTimeout(_0x25bc14),clearInterval(_0x25bc14),_0x25bc14=null;};_0x197011[_0x9a6309(0xba)](_0x9a6309(0x95),_0x23706b),_0x197011[_0x9a6309(0xba)](_0x9a6309(0xc8),_0x4968c8),_0x197011[_0x9a6309(0xba)](_0x9a6309(0xea),_0x4968c8);});}initColorSelector(),render(),enableLongPressStepper();
+</script>
+
+</body>
+</html>
